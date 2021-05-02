@@ -24,8 +24,15 @@ Choose any Chapter from the Drop-Down list and click "MovoTo" button to move to 
 
 # 4. Search Mode
 It provides the full-text searching with regular expression.
-The result will be listed 
+Each result shall be listed (if any) with its location as "CC-PPP-LL" (Cap.CC, p.PPP, l.LL).
+
 Be noted that some of auxiliary symbols are ignored in default mode.
+e.g. you can search "praecipué" with query like "praecipue" (without the accent grave).
+
+The removed characters are defined as Unicode region(s) shown below.
+Note that Hebrew vocalization and cantilation symbols shall be ignored in searching.
+e.g. You can find "מֶלֶךְ" with query like "מלך".
+Whenever such removal (i.e. normalization) is done, the line will be marked with "normalized" notation.
 
 ~~~JavaScript
 var diacriticsRemover = /([̀-̈]|[֑-ׇ]|[᾽-῀`´῾])/g;
@@ -36,7 +43,7 @@ var punctuationsRemover = /([,.;:\-*]|$)/g;
 ~~~
 
 If you want more precise result, check out the "/i (case insensitive)" box.
-
+With this box checked, "Nomen" and "nomen" shall be distinguished.
 
 # 5. JumpTo Mode
 Input "XXX-YY" for indicating "p.XXX l.YY" and click "JumpTo" to jump to the locate.
