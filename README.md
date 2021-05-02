@@ -30,9 +30,6 @@ Be noted that some of auxiliary symbols are ignored in default mode.
 e.g. you can search "praecipué" with query like "praecipue" (without the accent grave).
 
 The removed characters are defined as Unicode region(s) shown below.
-Note that Hebrew vocalization and cantilation symbols shall be ignored in searching.
-e.g. You can find "מֶלֶךְ" with query like "מלך".
-Whenever such removal (i.e. normalization) is done, the line will be marked with "normalized" notation.
 
 ~~~JavaScript
 var diacriticsRemover = /([̀-̈]|[֑-ׇ]|[᾽-῀`´῾])/g;
@@ -41,6 +38,11 @@ var diacriticsRemover = /([̀-̈]|[֑-ׇ]|[᾽-῀`´῾])/g;
   /* Diacritcs in Greek (U+1FBD-U+1FC0, U+1FEF, U+1FFD-U+1FFE) */
 var punctuationsRemover = /([,.;:\-*]|$)/g;
 ~~~
+
+Note that Hebrew vocalization and cantilation symbols shall be ignored in searching.
+e.g. You can find "מֶלֶךְ" with query like "מלך".
+Whenever such removal (i.e. normalization) is done, the line will be marked with "normalized" notation.
+
 
 If you want more precise result, check out the "/i (case insensitive)" box.
 With this box checked, "Nomen" and "nomen" shall be distinguished.
