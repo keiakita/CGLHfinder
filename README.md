@@ -1,5 +1,5 @@
 # CGLHfinder
-Digital transcription of Spinoza's "Compendium Grammatices Linguae Hebraeae" (Amsterdam, 1677) with a build-in searching tool.
+A digital transcription of Spinoza's "Compendium Grammatices Linguae Hebraeae" (Amsterdam, 1677) with a build-in searching tool.
 
 # Elements
 The "Spinoza CGLH Finder" consists of 6 elements: 
