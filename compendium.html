@@ -5374,14 +5374,15 @@
 
         /* attain the result */         
         var resultText = resultBox.innerText.split("\n")
+        /* .filter(line => !line.startsWith("Search Result")) */
         .join("\n");
 
         /* creating a blob and link */
         var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-        var blob = new Blob([bom, resultText], {"type": "text/plain;charset=utf-8"});
+        var blob = new Blob([bom, resultText], {type: "text/plain;charset=utf-8"});
         var link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
-            link.download = "CGLH_" + dateStr + ".txt";
+            link.download = "CGLHsr_" + dateStr + ".txt";
         
         /* simulate click to download */
         document.body.appendChild(link);
