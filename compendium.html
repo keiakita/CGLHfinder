@@ -7,6 +7,7 @@
     <!-- 
 
     作業ログ
+    250127 最小限のダウンロード機能を実装。
     240620 p.69 l.11 ヘブライ文字列ヌケを修正、Donation note を削除、書誌情報を微修正。
     211217 p.112 l.10, G が無自覚に修正した OP との差分をコメント。
     210617 p.35 l.7 & 8 のハテピームを修正
@@ -228,7 +229,8 @@
                     <input type="button" value="JumpTo" onclick="MODULE.j(document.getElementById('query2').value);">
                     <small style="color:#DDD; font-size: 10pt;">*activate JavaScript to use</small>
                 </form>
-                <input type="button" id="ignoreButton" value="ignore frills" onclick="MODULE.i()"> 
+                <input type="button" id="ignoreButton" value="ignore frills" onclick="MODULE.i()">
+                <button onclick="MODULE.d()">download</button> 
             </div>
             <!-- #header-content -->
         </div>
@@ -240,7 +242,7 @@
             <img src="Caute.png" style="padding : 20px;">
             <p>Baruch de Spinoza "Compendium Grammatices Linguae Hebraeae" (1677)</p>
             <p>Full text &amp; search tool</p>
-            <small>ver.20240620: digitized and coded by Kei Akita (<a href="mailto:zeugmatos@gmail.com?subject=On CGLH Finder">zeugmatos[at]gmail.com</a>)</small>
+            <small>ver.20250127: digitized and coded by Kei Akita (<a href="mailto:zeugmatos@gmail.com?subject=On CGLH Finder">zeugmatos[at]gmail.com</a>)</small>
     <small>*INDEX RERUM not transcribed for now.</small>
             <p>Abbreviations</p>
             <p>G: <i>Spinoza Opera</i>, im Auftrag der Heidelberger Akademie der Wissenschaften herausgegeben von Carl Gebhardt, 4 Bde., Heidelberg, Carl Winter, 1925.</p>
@@ -5210,10 +5212,10 @@
     <!--
 
     MODULE = (function() {
-        var searchByQuery, clearResults, jumpTo, ignoreLnum;
+        var searchByQuery, clearResults, jumpTo, ignoreLnum, downloadResult;
 
         /* Method 1: search */
-        searchByQuery = function(q, m) {
+        var searchByQuery = function(q, m) {
             /* pretreatments  */
             if (q === "") return 0;
             if (document.getElementById("resultBox")) clearResults();
@@ -5279,9 +5281,10 @@
             document.getElementById("resultBox").remove();
         }
 
+
         /* Method 3: scroll */
         /* str: valideted as PPP-LL */
-        jumpTo = function(str) {
+        var jumpTo = function(str) {
 
             /* page-line validator */
             var r = /(\d+)(-(\d+))?/;
@@ -5319,6 +5322,7 @@
         }
         /* end jumpTo */
 
+
         /* Method 4: ignore frills */
         var ignoreFrill = function(){
             var lnums = document.getElementsByClassName("lnum");
@@ -5342,29 +5346,55 @@
         /* end ignoreFrill */
 
 
-        /* Method 5: output and download the result via Blob */
-        /* pended */
-        /* 
-        var downloadResult = function(){
-
-              if (typeof Blob !== "undefined") {
-                //alert('このブラウザに対応しています');
-            } else {
-                alert('このブラウザには対応していません');
-            }
-
-            var b = new Blob(, {"type" : "text/plain"});
-            window.URL = window.URL || window.webkitURL;
-
-           
+        /* Method 5: dowonload a result */
+        var downloadResult = function() {
+        /* checking support */
+        if (typeof Blob === "undefined") {
+            alert('This browser does not support downloading.');
+            return;
         }
-        */
+
+        
+        var resultBox = document.getElementById("resultBox");
+    
+        /* checking if empty */
+        if (!resultBox) {
+            alert('empty result');
+            return;
+        }
+        
+        /* YYYYMM_HHMM */
+        var now = new Date();
+        var dateStr = now.getFullYear() + 
+                 ('0' + (now.getMonth() + 1)).slice(-2) + 
+                 ('0' + now.getDate()).slice(-2) +
+                 "_" + 
+                 ('0' + now.getHours()).slice(-2) + 
+                 ('0' + now.getMinutes()).slice(-2);
+
+        /* attain the result */         
+        var resultText = resultBox.innerText.split("\n")
+        /* .filter(line => !line.startsWith("Search Result")) */
+        .join("\n");
+
+        /* creating a blob and link */ 
+        var blob = new Blob([resultText], {"type": "text/plain;charset=utf-8"});
+        var link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "CGLH_" + dateStr + ".txt";
+        
+        /* simulate click to download */
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
         return {
             s: searchByQuery,
             c: clearResults,
             j: jumpTo,
-            i: ignoreFrill
+            i: ignoreFrill,
+            d: downloadResult
         };
 
     }()); /* closing the module */
