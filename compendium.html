@@ -5272,7 +5272,17 @@
                     hits++;
                 }
             }
-            resultBox.innerHTML += (" (" + hits + " hits)");
+            /* create a timestamp */
+            var now = new Date();
+            var timestamp = now.getFullYear() + '-' +
+                ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+                ('0' + now.getDate()).slice(-2) + '-' +
+                ('0' + now.getHours()).slice(-2) + ':' +
+                ('0' + now.getMinutes()).slice(-2) + ':' +
+                ('0' + now.getSeconds()).slice(-2);
+            resultBox.innerHTML += (" (" + hits + " hits at " + timestamp + ") ");
+            resultBox.dataset.query = query;
+            resultBox.dataset.hits = hits;
             alert("Total " + hits + " hits detected.\n(Click \"Clear\" button to delete results below)");
             jumpTo("resultBox");
         }
@@ -5357,34 +5367,28 @@
 
         
         var resultBox = document.getElementById("resultBox");
-    
+
         /* checking if empty */
         if (!resultBox) {
             alert('empty result');
             return;
         }
 
-        
-        /* YYYYMMDD_HHMM */
-        var now = new Date();
-        var dateStr = now.getFullYear() + 
-                 ('0' + (now.getMonth() + 1)).slice(-2) + 
-                 ('0' + now.getDate()).slice(-2) +
-                 "_" + 
-                 ('0' + now.getHours()).slice(-2) + 
-                 ('0' + now.getMinutes()).slice(-2);
-
         /* attain the result */         
-        var resultText = resultBox.innerText.split("\n")
-        /* .filter(line => !line.startsWith("Search Result")) */
-        .join("\n");
+        var resultText = resultBox.innerText.split("\n").join("\n");
+
+        /* sanitize query for filename */
+        var sanitizedQuery = resultBox.dataset.query
+            .replace(/[\/\\:*?"<>|]/g, '_')  // Replace unsafe characters with underscore
+            .replace(/\s+/g, '-')            // Replace whitespace with hyphen
+            .slice(0, 50);                   // Limit length
 
         /* creating a blob and link */
         var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
         var blob = new Blob([bom, resultText], {type: "text/plain;charset=utf-8"});
         var link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
-            link.download = "CGLHsr_" + dateStr + ".txt";
+            link.download = "CGLHsearch_" + sanitizedQuery + "_" + resultBox.dataset.hits + "hits.txt";
         
         /* simulate click to download */
         document.body.appendChild(link);
