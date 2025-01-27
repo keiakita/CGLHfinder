@@ -7,7 +7,7 @@
     <!-- 
 
     作業ログ
-    250127 最小限のダウンロード機能を実装。
+    250127 最小限のダウンロード機能を実装。　"test" 版はファイル名に検索クエリを入れる。
     240620 p.69 l.11 ヘブライ文字列ヌケを修正、Donation note を削除、書誌情報を微修正。
     211217 p.112 l.10, G が無自覚に修正した OP との差分をコメント。
     210617 p.35 l.7 & 8 のハテピームを修正
@@ -5273,6 +5273,8 @@
                 }
             }
             resultBox.innerHTML += (" (" + hits + " hits)");
+            resultBox.dataset.query = query;
+            resultBox.dataset.hits = hits;
             alert("Total " + hits + " hits detected.\n(Click \"Clear\" button to delete results below)");
             jumpTo("resultBox");
         }
@@ -5357,7 +5359,7 @@
 
         
         var resultBox = document.getElementById("resultBox");
-    
+
         /* checking if empty */
         if (!resultBox) {
             alert('empty result');
@@ -5375,17 +5377,20 @@
                  ('0' + now.getMinutes()).slice(-2);
 
         /* attain the result */         
-        var resultText = resultBox.innerText.split("\n")
-        /* .filter(line => !line.startsWith("Search Result")) */
-        .join("\n");
+        var resultText = resultBox.innerText.split("\n").join("\n");
+
+        /* Sanitize query for filename */
+        var sanitizedQuery = resultBox.dataset.query
+            .replace(/[\/\\:*?"<>|]/g, '_')  // Replace unsafe characters with underscore
+            .replace(/\s+/g, '-')            // Replace whitespace with hyphen
+            .slice(0, 50);                   // Limit length
 
         /* creating a blob and link */
         var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
         var blob = new Blob([bom, resultText], {type: "text/plain;charset=utf-8"});
         var link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
-            /* link.download = "CGLHsr_" + dateStr + ".txt"; */
-            link.download = "CGLHsearch_" + document.getElementById('query1').value +"_.txt";
+            link.download = "CGLHsearch_" + sanitizedQuery + "_" + resultBox.dataset.hits + "hits.txt";
         
         /* simulate click to download */
         document.body.appendChild(link);
